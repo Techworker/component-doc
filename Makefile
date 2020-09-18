@@ -1,6 +1,6 @@
 uid = $$(id -u)
 
-cli:
+node:
 	docker-compose run --rm --user ${uid} node bash
 
-.PHONY: cli
+.PHONY: node
