@@ -1,0 +1,10 @@
+Allows you to set the language.
+---
+{"language":"javascript"}
+---
+<vue-component-doc>Hallo</vue-component-doc>
+---
+<vue-component-doc-prism language="javascript">
+  <template v-slot:code>Hallo</template>
+  <template v-slot:result>Hallo</template>
+</vue-component-doc-prism>

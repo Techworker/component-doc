@@ -1,0 +1,10 @@
+Allows an alternate code slot using the configuration.
+---
+{"codeSlot":"here-goes-the-code"}
+---
+<vue-component-doc>Hallo</vue-component-doc>
+---
+<vue-component-doc-prism language="html">
+  <template v-slot:here-goes-the-code>Hallo</template>
+  <template v-slot:result>Hallo</template>
+</vue-component-doc-prism>

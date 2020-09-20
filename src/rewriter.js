@@ -4,7 +4,10 @@ const stripIndent = require("strip-indent");
 const {
     escapeHtml,
     extractOptionAttr,
-    extractBooleanOptionAttr } = require("./util");
+    extractBooleanOptionAttr,
+    hasAttr,
+    trimLeadingAndTrailing,
+} = require("./util");
 
 /**
  * The rewriter that will take the tag and replaces it with the configured
@@ -12,7 +15,7 @@ const {
  *
  * @param {Object} options
  *
- * @returns {RewritingStream}
+ * @returns {RewritingStream|Writable}
  */
 module.exports = (options) => {
     const rewriter = new RewritingStream();
@@ -45,6 +48,12 @@ module.exports = (options) => {
     let currentLanguage = options.language;
 
     /**
+     * A flag
+     * @type {boolean}
+     */
+    let currentLanguageIsBind = false;
+
+    /**
      * The name of the code slot.
      *
      * @type {string}
@@ -60,10 +69,24 @@ module.exports = (options) => {
 
     /**
      * The name of the resulting component.
-     * 
-     * @type {RTCIceComponent}
+     *
+     * @type {String}
      */
-    let currentRewriteToComponent = options.rewriteToComponent;
+    let currentComponent = options.component;
+
+    /**
+     * A flag indicating that there should be not code slot.
+     *
+     * @type {Boolean}
+     */
+    let currentOmitCodeSlot = options.omitCodeSlot;
+
+    /**
+     * A flag indicating that there should be not result slot.
+     *
+     * @type {Boolean}
+     */
+    let currentOmitResultSlot = options.omitResultSlot;
 
     /**
      * The current result content, so the code that will be interpreted by vue.
@@ -102,24 +125,30 @@ module.exports = (options) => {
         // get options from node and either use these or the default options
         currentTrim = extractBooleanOptionAttr(node.attrs, 'trim', options.trim);
         currentDedent = extractBooleanOptionAttr(node.attrs, 'dedent', options.dedent);
+        currentOmitCodeSlot = extractBooleanOptionAttr(node.attrs, 'omit-code-slot', options.omitCodeSlot);
+        currentOmitResultSlot = extractBooleanOptionAttr(node.attrs, 'omit-result-slot', options.omitResultSlot);
 
         currentLanguage = extractOptionAttr(node.attrs, 'language', options.language);
-        currentRewriteToComponent = extractOptionAttr(node.attrs, 'rewrite-to-component', options.rewriteToComponent);
+        currentLanguage = extractOptionAttr(node.attrs, ':language', currentLanguage);
+        currentLanguageIsBind = hasAttr(node.attrs, ':language');
+
+        currentComponent = extractOptionAttr(node.attrs, 'component', options.component);
 
         currentCodeSlot = extractOptionAttr(node.attrs, 'code-slot', options.codeSlot);
         currentResultSlot = extractOptionAttr(node.attrs, 'result-slot', options.resultSlot);
 
         // change the name of the node and filter out all internal
         // attributes
-        node.tagName = currentRewriteToComponent;
+        node.tagName = currentComponent;
         node.attrs = node.attrs.filter((attr) => {
-            return ['trim', 'dedent', 'language', 'rewrite-to-component', 'code-slot', 'result-slot']
+            return ['trim', 'dedent', 'language', ':language', 'component',
+                    'code-slot', 'result-slot', 'omit-code-slot', 'omit-result-slot']
                 .indexOf(attr.name) === -1;
         });
 
         // add the language property.
         node.attrs.push({
-            name: 'language',
+            name: (currentLanguageIsBind ? ':' : '') + 'language',
             value: currentLanguage
         });
 
@@ -127,11 +156,14 @@ module.exports = (options) => {
         rewriter.emitStartTag(node);
 
         // start the code slot
-        rewriter.emitStartTag({
-            attrs: [{name: 'v-slot:' + currentCodeSlot, value: ''}],
-            tagName: "template",
-            selfClosing: false,
-        });
+        if(!currentOmitCodeSlot) {
+            rewriter.emitRaw("\n  ");
+            rewriter.emitStartTag({
+                attrs: [{name: 'v-slot:' + currentCodeSlot, value: ''}],
+                tagName: "template",
+                selfClosing: false,
+            });
+        }
     });
 
     /**
@@ -149,11 +181,13 @@ module.exports = (options) => {
 
             // trim if required
             if (currentTrim) {
-                raw = raw.trim();
+                raw = trimLeadingAndTrailing(raw);
             }
         }
 
-        rewriter.emitRaw(raw);
+        if(!currentOmitCodeSlot) {
+            rewriter.emitRaw(raw);
+        }
     });
 
     /**
@@ -166,7 +200,9 @@ module.exports = (options) => {
             currentResult += raw;
 
             // escape if necessary
-            rewriter.emitRaw(inComponentDocTag ? escapeHtml(raw) : raw);
+            if(!currentOmitCodeSlot) {
+                rewriter.emitRaw(inComponentDocTag ? escapeHtml(raw) : raw);
+            }
             return;
         }
 
@@ -174,31 +210,37 @@ module.exports = (options) => {
         inComponentDocTag = false;
 
         // close the code template
-        rewriter.emitEndTag({
-            attrs: [],
-            tagName: "template",
-            selfClosing: false,
-        });
+        if(!currentOmitCodeSlot) {
+            rewriter.emitEndTag({
+                attrs: [],
+                tagName: "template",
+                selfClosing: false,
+            });
+        }
 
         // create the template tag for the result slot
-        rewriter.emitStartTag({
-            attrs: [{name: 'v-slot:' + currentResultSlot, value: ''}],
-            tagName: "template",
-            selfClosing: false,
-        });
+        if(!currentOmitResultSlot) {
+            rewriter.emitRaw("\n  ");
+            rewriter.emitStartTag({
+                attrs: [{name: 'v-slot:' + currentResultSlot, value: ''}],
+                tagName: "template",
+                selfClosing: false,
+            });
 
-        // emit the collected raw data
-        rewriter.emitRaw(currentResult);
+            // emit the collected raw data
+            rewriter.emitRaw(currentResult);
 
-        // close result slot
-        rewriter.emitEndTag({
-            attrs: [],
-            tagName: "template",
-            selfClosing: false,
-        });
+            // close result slot
+            rewriter.emitEndTag({
+                attrs: [],
+                tagName: "template",
+                selfClosing: false,
+            });
+        }
+        rewriter.emitRaw("\n");
 
         // transform node tag name and write it.
-        node.tagName = currentRewriteToComponent;
+        node.tagName = currentComponent;
         rewriter.emitEndTag(node);
     });
 

@@ -1,0 +1,10 @@
+Allows an alternate result tag.
+---
+{"component":"my-custom-highlighter"}
+---
+<vue-component-doc>Hallo</vue-component-doc>
+---
+<my-custom-highlighter language="html">
+  <template v-slot:code>Hallo</template>
+  <template v-slot:result>Hallo</template>
+</my-custom-highlighter>

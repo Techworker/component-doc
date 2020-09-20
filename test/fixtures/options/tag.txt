@@ -1,0 +1,10 @@
+Allows alternate tags.
+---
+{"tag":"my-custom-tag"}
+---
+<my-custom-tag>Hallo</my-custom-tag>
+---
+<vue-component-doc-prism language="html">
+  <template v-slot:code>Hallo</template>
+  <template v-slot:result>Hallo</template>
+</vue-component-doc-prism>

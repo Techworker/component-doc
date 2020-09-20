@@ -12,12 +12,21 @@
   ],
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "test": "ava"
+  },
   "devDependencies": {
-    "webpack": "^4.44.2",
-    "loader-utils": "^2.0.0"
+    "ava": "^3.12.1",
+    "loader-utils": "^2.0.0",
+    "webpack": "^4.44.2"
   },
   "dependencies": {
     "parse5-html-rewriting-stream": "^6.0.1",
     "strip-indent": "^3.0.0"
+  },
+  "ava": {
+    "files": [
+      "test/**/*"
+    ]
   }
 }

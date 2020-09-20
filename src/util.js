@@ -29,11 +29,11 @@ function escapeHtml(unsafe) {
  */
 function extractBooleanOptionAttr(attrs, name, defaultValue) {
   const value = extractOptionAttr(attrs, name, defaultValue);
-  if(value !== defaultValue) {
-    return value === 'true' || value === '1';
+  if(value === defaultValue) {
+    return value;
   }
 
-  return false;
+  return value === 'true' || value === '1';
 }
 
 /**
@@ -53,9 +53,33 @@ function extractOptionAttr(attrs, name, defaultValue) {
   return defaultValue;
 }
 
+function hasAttr(attrs, name) {
+  return attrs.find((v) => { return v.name === name; }) !== undefined;
+}
+
+function trimUntilText(result, line) {
+  if (result.length || line.trim().length) {
+    result.push(line);
+  }
+  return result;
+}
+
+// Trim both leading and trailing empty lines but leave empty lines within code intact
+function trimLeadingAndTrailing(input) {
+  const lines = (input || "").split(/\r?\n/);
+
+  const trimmed = lines
+      .reduceRight(trimUntilText, [])
+      .reduceRight(trimUntilText, []);
+  return trimmed.join("\n");
+}
+
+
 module.exports = {
   escapeHtml,
   extractOptionAttr,
   extractBooleanOptionAttr,
+  hasAttr,
+  trimLeadingAndTrailing
 };
 
