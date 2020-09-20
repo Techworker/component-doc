@@ -17,16 +17,16 @@ module.exports = async function(source, map, meta) {
         let options = getOptions(this);
 
         // set proper defaults
-        options.debug = options.debug || false;
+        options.debug = options.debug !== undefined ? !!options.debug : false;
         options.tag = options.tag || 'vue-component-doc';
         options.component = options.component || 'vue-component-doc-prism';
         options.codeSlot = options.codeSlot || 'code';
         options.resultSlot = options.resultSlot || 'result';
         options.language = options.language || 'html';
-        options.dedent = !!(options.dedent || true);
-        options.trim = !!(options.trim || true);
-        options.omitCodeSlot = !!(options.omitCodeSlot || false);
-        options.omitResultSlot = !!(options.omitResultSlot || false);
+        options.dedent = options.dedent !== undefined ? !!options.dedent : true;
+        options.trim = options.trim !== undefined ? !!options.trim : true;
+        options.omitCodeSlot = options.omitCodeSlot !== undefined ? !!options.omitCodeSlot : false;
+        options.omitResultSlot = options.omitResultSlot !== undefined ? !!options.omitResultSlot : false;
 
         // check if this file contains the tag we want to transform
         if (source.indexOf(options.tag) === -1) {

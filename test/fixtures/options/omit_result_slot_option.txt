@@ -1,0 +1,9 @@
+Omit result slot via option.
+---
+{"omitResultSlot":true}
+---
+<vue-component-doc>testcase</vue-component-doc>
+---
+<vue-component-doc-test language="html">
+<template v-slot:code>testcase</template>
+</vue-component-doc-test>

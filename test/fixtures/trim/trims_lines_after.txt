@@ -1,0 +1,16 @@
+Trims empty lines after the content.
+---
+{"trim":true,"dedent":false}
+---
+<vue-component-doc trim="true">
+    line 1
+    line 2
+
+</vue-component-doc>
+---
+<vue-component-doc-test language="html">
+<template v-slot:code>    line 1
+    line 2</template>
+<template v-slot:result>    line 1
+    line 2</template>
+</vue-component-doc-test>

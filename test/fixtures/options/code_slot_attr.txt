@@ -1,10 +1,10 @@
-Allows an alternate code slot name in the attribute.
+Set an alternate code-slot name via attribute.
 ---
-{"codeSlot":"here-goes-the-code"}
+{"codeSlot":"global"}
 ---
-<vue-component-doc code-slot="another-code-slot">Hallo</vue-component-doc>
+<vue-component-doc code-slot="local">testcase</vue-component-doc>
 ---
-<vue-component-doc-prism language="html">
-  <template v-slot:another-code-slot>Hallo</template>
-  <template v-slot:result>Hallo</template>
-</vue-component-doc-prism>
+<vue-component-doc-test language="html">
+<template v-slot:local>testcase</template>
+<template v-slot:result>testcase</template>
+</vue-component-doc-test>

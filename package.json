@@ -1,5 +1,5 @@
 {
-  "name": "vue-component-doc-loader",
+  "name": "vue-component-usage-loader",
   "description": "A webpack loader to display vue code for documentations",
   "author": "Benjamin Ansbach <benjaminansbach@gmail.com>",
   "version": "0.1.0",
@@ -26,7 +26,8 @@
   },
   "ava": {
     "files": [
-      "test/**/*"
+      "test/**/*",
+      "!test/runner.js"
     ]
   }
 }

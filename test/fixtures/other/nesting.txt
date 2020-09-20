@@ -1,0 +1,12 @@
+Nesting component-doc tags
+---
+{}
+---
+<vue-component-doc>
+<vue-component-doc></vue-component-doc>
+</vue-component-doc>
+---
+<vue-component-doc-test language="html">
+<template v-slot:code>&lt;vue-component-doc&gt;&lt;/vue-component-doc&gt;</template>
+<template v-slot:result><vue-component-doc></vue-component-doc></template>
+</vue-component-doc-test>

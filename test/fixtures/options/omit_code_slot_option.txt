@@ -1,10 +1,9 @@
-Set an alternate code-slot name via option.
+Omit code slot via option.
 ---
-{"codeSlot":"test"}
+{"omitCodeSlot":true}
 ---
 <vue-component-doc>testcase</vue-component-doc>
 ---
 <vue-component-doc-test language="html">
-<template v-slot:test>testcase</template>
 <template v-slot:result>testcase</template>
 </vue-component-doc-test>

@@ -1,0 +1,10 @@
+Sets an alternate component tag via option.
+---
+{}
+---
+<vue-component-doc component="another-highlighter-component">testcase</vue-component-doc>
+---
+<another-highlighter-component language="html">
+<template v-slot:code>testcase</template>
+<template v-slot:result>testcase</template>
+</another-highlighter-component>

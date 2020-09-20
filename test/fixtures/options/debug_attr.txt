@@ -1,0 +1,16 @@
+Sets debugging output via attr.
+---
+{"debug":false}
+---
+<vue-component-doc debug="true">testcase</vue-component-doc>
+---
+<vue-component-doc-test language="html">
+<template v-slot:code>testcase</template>
+<template v-slot:result>testcase</template>
+</vue-component-doc-test>
+<!-- Rewriter result:
+<vue-component-doc-test language="html">
+<template v-slot:code>testcase</template>
+<template v-slot:result>testcase</template>
+</vue-component-doc-test>
+-->

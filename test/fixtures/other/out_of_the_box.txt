@@ -1,10 +1,10 @@
-Set an alternate code-slot name via option.
+Out of the box test
 ---
-{"codeSlot":"test"}
+{}
 ---
 <vue-component-doc>testcase</vue-component-doc>
 ---
 <vue-component-doc-test language="html">
-<template v-slot:test>testcase</template>
+<template v-slot:code>testcase</template>
 <template v-slot:result>testcase</template>
 </vue-component-doc-test>
