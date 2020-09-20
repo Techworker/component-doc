@@ -2,14 +2,14 @@ Sets dedent option via attr.
 ---
 {"dedent":false}
 ---
-<vue-component-doc dedent="true">
+<vue-component-usage dedent="true">
     testcase
         indent
-</vue-component-doc>
+</vue-component-usage>
 ---
-<vue-component-doc-test language="html">
+<vue-component-usage-test language="html">
 <template v-slot:code>testcase
     indent</template>
 <template v-slot:result>testcase
     indent</template>
-</vue-component-doc-test>
+</vue-component-usage-test>

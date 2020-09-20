@@ -2,8 +2,8 @@ Omit result slot via attribute.
 ---
 {"omitResultSlot":false}
 ---
-<vue-component-doc omit-result-slot="true">testcase</vue-component-doc>
+<vue-component-usage omit-result-slot="true">testcase</vue-component-usage>
 ---
-<vue-component-doc-test language="html">
+<vue-component-usage-test language="html">
 <template v-slot:code>testcase</template>
-</vue-component-doc-test>
+</vue-component-usage-test>

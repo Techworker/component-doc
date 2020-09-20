@@ -14,12 +14,20 @@ const getRewriter = require("./rewriter");
  */
 module.exports = async function(source, map, meta) {
     return new Promise((resolve, reject) => {
+        const resolveLoader = this.async ? this.async() : null;
+
         let options = getOptions(this);
+
+        options.tag = options.tag || 'vue-component-usage';
+
+        // check if this file contains the tag we want to transform
+        if (source.indexOf(options.tag) === -1) {
+            resolveLoader(null, source, map, meta);
+        }
 
         // set proper defaults
         options.debug = options.debug !== undefined ? !!options.debug : false;
-        options.tag = options.tag || 'vue-component-doc';
-        options.component = options.component || 'vue-component-doc-prism';
+        options.component = options.component || 'vue-component-usage-test';
         options.codeSlot = options.codeSlot || 'code';
         options.resultSlot = options.resultSlot || 'result';
         options.language = options.language || 'html';
@@ -27,12 +35,6 @@ module.exports = async function(source, map, meta) {
         options.trim = options.trim !== undefined ? !!options.trim : true;
         options.omitCodeSlot = options.omitCodeSlot !== undefined ? !!options.omitCodeSlot : false;
         options.omitResultSlot = options.omitResultSlot !== undefined ? !!options.omitResultSlot : false;
-
-        // check if this file contains the tag we want to transform
-        if (source.indexOf(options.tag) === -1) {
-            return source;
-        }
-        const resolveLoader = this.async ? this.async() : null;
 
         const chunks = [];
         const stream = Duplex.from(source).pipe(getRewriter(options));

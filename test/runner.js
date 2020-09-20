@@ -16,7 +16,7 @@ function runFixtureFile(file, group = 'unknown') {
     test('[' + group + '] ' + splitted[0], async assert => {
         // empty query
         let localConfig = JSON.parse(splitted[1]);
-        localConfig.component = 'vue-component-doc-test';
+        localConfig.component = 'vue-component-usage-test';
 
         global.query = '?' + JSON.stringify(localConfig);
         const text = await vueComponentDocLoader(splitted[2]);

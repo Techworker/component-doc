@@ -2,9 +2,9 @@ Set an alternate result-slot name via attribute.
 ---
 {"resultSlot":"global"}
 ---
-<vue-component-doc result-slot="local">testcase</vue-component-doc>
+<vue-component-usage result-slot="local">testcase</vue-component-usage>
 ---
-<vue-component-doc-test language="html">
+<vue-component-usage-test language="html">
 <template v-slot:code>testcase</template>
 <template v-slot:local>testcase</template>
-</vue-component-doc-test>
+</vue-component-usage-test>

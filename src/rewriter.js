@@ -1,6 +1,9 @@
 const RewritingStream = require("parse5-html-rewriting-stream");
+
+// utility to strip indentations
 const stripIndent = require("strip-indent");
 
+// import helpers
 const {
     escapeHtml,
     extractOptionAttr,
@@ -10,8 +13,8 @@ const {
 } = require("./util");
 
 /**
- * The rewriter that will take the tag and replaces it with the configured
- * or defined vue component.
+ * The rewriter will loop through the source and rewrite the contents
+ * of the configured tag.
  *
  * @param {Object} rootOptions
  *
@@ -21,7 +24,9 @@ module.exports = (rootOptions) => {
     const rewriter = new RewritingStream();
 
     /**
-     * A flag indicating whether we are in the component itself.
+     * A flag indicating whether we are in the component-tag that we want to
+     * rewrite.
+     *
      * @type {boolean}
      */
     let inComponentDocTag = false;
@@ -48,11 +53,11 @@ module.exports = (rootOptions) => {
     let nestingLevel = 0;
 
     /**
-     * The current result content, so the code that will be interpreted by vue.
+     * The content of the tag.
      *
      * @type {string}
      */
-    let currentResult = '';
+    let content = '';
 
     /**
      * Listen to a start tag.
@@ -61,33 +66,30 @@ module.exports = (rootOptions) => {
         // check against the tag that we want to rewrite
         if (node.tagName !== rootOptions.tag) {
 
-            // if we are inside of a component, we'll save the output for
-            // later
+            // if we are inside of a component, we'll save the output for later
             if(inComponentDocTag) {
-                currentResult += raw;
-            }
-
-            // either emit the escaped version of the tag or the raw version
-            // check for nested component tags
-            if(!inComponentDocTag) {
+                content += raw;
+            } else {
+                // else, simply output what was found
                 rewriter.emitRaw(raw);
             }
             return;
         }
 
+        // make sure we can highlight ourself
         if(inComponentDocTag) {
             nestingLevel++;
-            currentResult += raw;
+            content += raw;
             return;
         }
 
         // flag as in-component
         inComponentDocTag = true;
 
-        // reset the current result
-        currentResult = '';
+        // reset the current content
+        content = '';
 
-        // get options from node and either use these or the default options
+        // get options from the attributes and either use these or the default options
         options = Object.assign(rootOptions, {
             trim: extractBooleanOptionAttr(node.attrs, 'trim', rootOptions.trim),
             dedent: extractBooleanOptionAttr(node.attrs, 'dedent', rootOptions.dedent),
@@ -100,14 +102,14 @@ module.exports = (rootOptions) => {
             debug: extractBooleanOptionAttr(node.attrs, 'debug', rootOptions.debug),
         });
 
+        // keep :language attributes
         languageIsBind = false;
         if(hasAttr(node.attrs, ':language')) {
             options.language = extractOptionAttr(node.attrs, ':language', rootOptions.language);
             languageIsBind = true;
         }
 
-        // change the name of the node and filter out all internal
-        // attributes
+        // change the name of the node and filter out all internal attributes
         node.tagName = options.component;
         node.attrs = node.attrs.filter((attr) => {
             return ['trim', 'dedent', 'language', ':language', 'component', 'debug',
@@ -130,8 +132,8 @@ module.exports = (rootOptions) => {
      */
     rewriter.on('text', (node, raw) => {
         if(inComponentDocTag) {
-            // append the data
-            currentResult += raw;
+            // append raw contents if we are inside of the component
+            content += raw;
             return;
         }
 
@@ -144,30 +146,31 @@ module.exports = (rootOptions) => {
     rewriter.on('endTag', (node, raw) => {
 
         if (node.tagName !== options.tag) {
-            // save to result
 
-            // escape if necessary
+            // when we are inside of the component, we'll simply save the raw value..
             if(inComponentDocTag) {
-                currentResult += raw;
+                content += raw;
             } else {
+                // ..otherwise will write it out
                 rewriter.emitRaw(raw);
             }
 
             return;
         }
 
+        // if we have a nesting level > 0 (a options.tag in a options.tag), we will
+        // simply save the content and decrease the nesting level
         if(nestingLevel > 0) {
             nestingLevel--;
-            currentResult += raw;
+            content += raw;
             return;
         }
 
         // we are out now, reset the flag
         inComponentDocTag = false;
 
-        // close the code template
+        // create the code slot
         if(!options.omitCodeSlot) {
-            // start the code slot
             rewriter.emitRaw("\n");
             rewriter.emitStartTag({
                 attrs: [{name: 'v-slot:' + options.codeSlot, value: ''}],
@@ -175,7 +178,7 @@ module.exports = (rootOptions) => {
                 selfClosing: false,
             });
 
-            let escaped = escapeHtml(currentResult);
+            let escaped = escapeHtml(content);
             if(options.dedent) {
                 escaped = stripIndent(escaped);
             }
@@ -193,7 +196,7 @@ module.exports = (rootOptions) => {
             rewriter.emitRaw("\n");
         }
 
-        // create the template tag for the result slot
+        // create the result slot
         if(!options.omitResultSlot) {
             if(options.omitCodeSlot) {
                 rewriter.emitRaw("\n");
@@ -206,13 +209,13 @@ module.exports = (rootOptions) => {
 
             // emit the collected raw data
             if(options.dedent) {
-                currentResult = stripIndent(currentResult);
+                content = stripIndent(content);
             }
             if(options.trim) {
-                currentResult = trimLeadingAndTrailing(currentResult);
+                content = trimLeadingAndTrailing(content);
             }
 
-            rewriter.emitRaw(currentResult);
+            rewriter.emitRaw(content);
 
             // close result slot
             rewriter.emitEndTag({
@@ -223,7 +226,7 @@ module.exports = (rootOptions) => {
             rewriter.emitRaw("\n");
         }
 
-        // transform node tag name and write it.
+        // transform node name and write it.
         node.tagName = options.component;
         rewriter.emitEndTag(node);
     });

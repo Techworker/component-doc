@@ -2,9 +2,9 @@ Set an alternate language name via attribute.
 ---
 {"language":"html"}
 ---
-<vue-component-doc language="javascript">testcase</vue-component-doc>
+<vue-component-usage language="javascript">testcase</vue-component-usage>
 ---
-<vue-component-doc-test language="javascript">
+<vue-component-usage-test language="javascript">
 <template v-slot:code>testcase</template>
 <template v-slot:result>testcase</template>
-</vue-component-doc-test>
+</vue-component-usage-test>

@@ -2,8 +2,8 @@ Omit code slot via attribute.
 ---
 {"omitCodeSlot":false}
 ---
-<vue-component-doc omit-code-slot="true">testcase</vue-component-doc>
+<vue-component-usage omit-code-slot="true">testcase</vue-component-usage>
 ---
-<vue-component-doc-test language="html">
+<vue-component-usage-test language="html">
 <template v-slot:result>testcase</template>
-</vue-component-doc-test>
+</vue-component-usage-test>
