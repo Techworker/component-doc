@@ -127,7 +127,7 @@ debug your highlighter components.
 
 ## Developing usage components
 
-The loader itself does not ship with a highlight-component, but it is 
+The loader itself does not ship with a usage-component, but it is 
 pretty easy to create one on your own.
 
 In case you created one on your own and want to share the project, please
