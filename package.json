@@ -21,7 +21,6 @@
     "webpack": "^4.44.2"
   },
   "dependencies": {
-    "np": "^6.5.0",
     "parse5-html-rewriting-stream": "^6.0.1",
     "strip-indent": "^3.0.0"
   },
