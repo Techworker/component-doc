@@ -5,6 +5,9 @@ module.exports = (chainableWebpackConfig, config) => {
         .rule('vue')
         .use('component-doc')
         .loader(path.resolve(__dirname, 'src/loader.js'))
-        .options(config)
+        .tap(options => {
+            // modify the options...
+            return config || {};
+        })
         .end();
 };

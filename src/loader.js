@@ -22,7 +22,13 @@ module.exports = async function(source, map, meta) {
 
         // check if this file contains the tag we want to transform
         if (source.indexOf(options.tag) === -1) {
-            resolveLoader(null, source, map, meta);
+            if(resolveLoader !== null) {
+                resolveLoader(null, source, map, meta);
+            } else {
+                resolve(source);
+            }
+
+            return;
         }
 
         // set proper defaults
@@ -48,12 +54,6 @@ module.exports = async function(source, map, meta) {
         });
         stream.on("end", () => {
             let result = chunks.join("").replace(/(v-slot:(.*?)="")/gm, "v-slot:$2");
-
-            if(options.debug) {
-                // append the resulting component tag in debug mode for
-                // development
-                result += "\n<!-- Rewriter result:\n" + result + "\n-->";
-            }
 
             if (resolveLoader !== null) {
                 resolveLoader(null, result, map, meta);
