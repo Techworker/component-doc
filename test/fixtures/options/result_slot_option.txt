@@ -4,7 +4,7 @@ Set an alternate result-slot name via option.
 ---
 <vue-component-usage>testcase</vue-component-usage>
 ---
-<vue-component-usage-test language="html">
+<vue-component-usage-test>
 <template v-slot:code>testcase</template>
 <template v-slot:test>testcase</template>
 </vue-component-usage-test>

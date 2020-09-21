@@ -31,12 +31,16 @@ module.exports = async function(source, map, meta) {
             return;
         }
 
+        if(options.component === undefined) {
+            reject('Please set the component option to your component ' +
+                'responsible for the display of your usage example.');
+            return;
+        }
+
         // set proper defaults
         options.debug = options.debug !== undefined ? !!options.debug : false;
-        options.component = options.component || 'vue-component-usage-test';
         options.codeSlot = options.codeSlot || 'code';
         options.resultSlot = options.resultSlot || 'result';
-        options.language = options.language || 'html';
         options.dedent = options.dedent !== undefined ? !!options.dedent : true;
         options.trim = options.trim !== undefined ? !!options.trim : true;
         options.omitCodeSlot = options.omitCodeSlot !== undefined ? !!options.omitCodeSlot : false;

@@ -53,10 +53,6 @@ function extractOptionAttr(attrs, name, defaultValue) {
   return defaultValue;
 }
 
-function hasAttr(attrs, name) {
-  return attrs.find((v) => { return v.name === name; }) !== undefined;
-}
-
 function trimUntilText(result, line) {
   if (result.length || line.trim().length) {
     result.push(line);
@@ -79,7 +75,6 @@ module.exports = {
   escapeHtml,
   extractOptionAttr,
   extractBooleanOptionAttr,
-  hasAttr,
   trimLeadingAndTrailing
 };
 

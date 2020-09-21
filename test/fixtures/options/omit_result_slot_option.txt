@@ -4,6 +4,6 @@ Omit result slot via option.
 ---
 <vue-component-usage>testcase</vue-component-usage>
 ---
-<vue-component-usage-test language="html">
+<vue-component-usage-test>
 <template v-slot:code>testcase</template>
 </vue-component-usage-test>

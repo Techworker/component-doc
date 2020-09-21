@@ -18,7 +18,7 @@ Complex code with outer html and inner escaping.
 ---
 <strong>Custom Tag before</strong>
 <nested>
-  <vue-component-usage-test language="html">
+  <vue-component-usage-test>
 <template v-slot:another-code-slot>&lt;h1&gt;Test&lt;/h1&gt;
 &lt;ul&gt;
     &lt;li&gt;This is&lt;/li&gt;

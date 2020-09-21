@@ -8,7 +8,6 @@ const {
     escapeHtml,
     extractOptionAttr,
     extractBooleanOptionAttr,
-    hasAttr,
     trimLeadingAndTrailing,
 } = require("./util");
 
@@ -39,13 +38,6 @@ module.exports = (rootOptions) => {
     let options = Object.assign({}, rootOptions);
 
     /**
-     * A value indicating whether the user used :language instead of language.
-     *
-     * @type {boolean}
-     */
-    let languageIsBind = false;
-
-    /**
      * The nesting level of the tag.
      *
      * @type {number}
@@ -59,6 +51,8 @@ module.exports = (rootOptions) => {
      */
     let content = '';
 
+    let generated = '';
+
     /**
      * Listen to a start tag.
      */
@@ -71,7 +65,7 @@ module.exports = (rootOptions) => {
                 content += raw;
             } else {
                 // else, simply output what was found
-                rewriter.emitRaw(raw);
+                emitRaw(raw);
             }
             return;
         }
@@ -87,7 +81,7 @@ module.exports = (rootOptions) => {
         inComponentDocTag = true;
 
         // reset the current content
-        content = '';
+        content = generated = '';
 
         // get options from the attributes and either use these or the default options
         options = Object.assign(rootOptions, {
@@ -95,36 +89,22 @@ module.exports = (rootOptions) => {
             dedent: extractBooleanOptionAttr(node.attrs, 'dedent', rootOptions.dedent),
             omitCodeSlot: extractBooleanOptionAttr(node.attrs, 'omit-code-slot', rootOptions.omitCodeSlot),
             omitResultSlot: extractBooleanOptionAttr(node.attrs, 'omit-result-slot', rootOptions.omitResultSlot),
-            language: extractOptionAttr(node.attrs, 'language', rootOptions.language),
             component: extractOptionAttr(node.attrs, 'component', rootOptions.component),
             codeSlot: extractOptionAttr(node.attrs, 'code-slot', rootOptions.codeSlot),
             resultSlot: extractOptionAttr(node.attrs, 'result-slot', rootOptions.resultSlot),
             debug: extractBooleanOptionAttr(node.attrs, 'debug', rootOptions.debug),
         });
 
-        // keep :language attributes
-        languageIsBind = false;
-        if(hasAttr(node.attrs, ':language')) {
-            options.language = extractOptionAttr(node.attrs, ':language', rootOptions.language);
-            languageIsBind = true;
-        }
-
         // change the name of the node and filter out all internal attributes
         node.tagName = options.component;
         node.attrs = node.attrs.filter((attr) => {
-            return ['trim', 'dedent', 'language', ':language', 'component', 'debug',
+            return ['trim', 'dedent', 'component', 'debug',
                     'code-slot', 'result-slot', 'omit-code-slot', 'omit-result-slot']
                 .indexOf(attr.name) === -1;
         });
 
-        // add the language property.
-        node.attrs.push({
-            name: (languageIsBind ? ':' : '') + 'language',
-            value: options.language
-        });
-
-        // start the new node
-        rewriter.emitStartTag(node);
+        // start the new tag
+        emitStartTag(node, true);
     });
 
     /**
@@ -137,7 +117,7 @@ module.exports = (rootOptions) => {
             return;
         }
 
-        rewriter.emitRaw(raw);
+        emitRaw(raw);
     });
 
     /**
@@ -152,7 +132,7 @@ module.exports = (rootOptions) => {
                 content += raw;
             } else {
                 // ..otherwise will write it out
-                rewriter.emitRaw(raw);
+                emitRaw(raw);
             }
 
             return;
@@ -171,12 +151,12 @@ module.exports = (rootOptions) => {
 
         // create the code slot
         if(!options.omitCodeSlot) {
-            rewriter.emitRaw("\n");
-            rewriter.emitStartTag({
+            emitRaw("\n", options.debug);
+            emitStartTag({
                 attrs: [{name: 'v-slot:' + options.codeSlot, value: ''}],
                 tagName: "template",
                 selfClosing: false,
-            });
+            }, options.debug);
 
             let escaped = escapeHtml(content);
             if(options.dedent) {
@@ -186,26 +166,26 @@ module.exports = (rootOptions) => {
                 escaped = trimLeadingAndTrailing(escaped);
             }
 
-            rewriter.emitRaw(escaped);
+            emitRaw(escaped, options.debug);
 
-            rewriter.emitEndTag({
+            emitEndTag({
                 attrs: [],
                 tagName: "template",
                 selfClosing: false,
-            });
-            rewriter.emitRaw("\n");
+            }, options.debug);
+            emitRaw("\n", options.debug);
         }
 
         // create the result slot
         if(!options.omitResultSlot) {
             if(options.omitCodeSlot) {
-                rewriter.emitRaw("\n");
+                emitRaw("\n", options.debug);
             }
-            rewriter.emitStartTag({
+            emitStartTag({
                 attrs: [{name: 'v-slot:' + options.resultSlot, value: ''}],
                 tagName: "template",
                 selfClosing: false,
-            });
+            }, options.debug);
 
             // emit the collected raw data
             if(options.dedent) {
@@ -215,20 +195,55 @@ module.exports = (rootOptions) => {
                 content = trimLeadingAndTrailing(content);
             }
 
-            rewriter.emitRaw(content);
+            emitRaw(content, options.debug);
 
             // close result slot
-            rewriter.emitEndTag({
+            emitEndTag({
                 attrs: [],
                 tagName: "template",
                 selfClosing: false,
-            });
-            rewriter.emitRaw("\n");
+            }, options.debug);
+            emitRaw("\n", options.debug);
         }
 
         // transform node name and write it.
         node.tagName = options.component;
-        rewriter.emitEndTag(node);
+        emitEndTag(node, options.debug);
+        if(options.debug === true) {
+            emitRaw("\n");
+            rewriter.emitComment({
+                text: 'DEBUG:'
+            });
+            emitRaw("\n");
+            rewriter.emitComment({
+                text: generated
+            });
+        }
+    });
+
+    let tmpDebug = false;
+
+    function emitStartTag(token, debug = false) {
+        tmpDebug = debug;
+        rewriter.emitStartTag(token);
+        tmpDebug = false;
+    }
+
+    function emitEndTag(token, debug = false) {
+        tmpDebug = debug;
+        rewriter.emitEndTag(token);
+        tmpDebug = false;
+    }
+    function emitRaw(raw, debug = false) {
+        tmpDebug = debug;
+        rewriter.emitRaw(raw);
+        tmpDebug = false;
+    }
+
+    rewriter.on('data', (chunk) => {
+        if(tmpDebug) {
+            generated += chunk;
+        }
     });
 
     return rewriter;

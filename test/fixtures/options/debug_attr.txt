@@ -4,13 +4,12 @@ Sets debugging output via attr.
 ---
 <vue-component-usage debug="true">testcase</vue-component-usage>
 ---
-<vue-component-usage-test language="html">
+<vue-component-usage-test>
 <template v-slot:code>testcase</template>
 <template v-slot:result>testcase</template>
 </vue-component-usage-test>
-<!-- Rewriter result:
-<vue-component-usage-test language="html">
+<!--DEBUG:-->
+<!--<vue-component-usage-test>
 <template v-slot:code>testcase</template>
 <template v-slot:result>testcase</template>
-</vue-component-usage-test>
--->
+</vue-component-usage-test>-->

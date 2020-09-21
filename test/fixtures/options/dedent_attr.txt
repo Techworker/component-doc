@@ -7,7 +7,7 @@ Sets dedent option via attr.
         indent
 </vue-component-usage>
 ---
-<vue-component-usage-test language="html">
+<vue-component-usage-test>
 <template v-slot:code>testcase
     indent</template>
 <template v-slot:result>testcase
