@@ -2,7 +2,7 @@
   "name": "vue-component-usage-loader",
   "description": "A webpack loader to display vue code for documentations",
   "author": "Benjamin Ansbach <benjaminansbach@gmail.com>",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "keywords": [
     "vue",
     "compile",
