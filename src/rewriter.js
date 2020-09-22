@@ -99,12 +99,12 @@ module.exports = (rootOptions) => {
         node.tagName = options.component;
         node.attrs = node.attrs.filter((attr) => {
             return ['trim', 'dedent', 'component', 'debug',
-                    'code-slot', 'result-slot', 'omit-code-slot', 'omit-result-slot']
+                'code-slot', 'result-slot', 'omit-code-slot', 'omit-result-slot']
                 .indexOf(attr.name) === -1;
         });
 
         // start the new tag
-        emitStartTag(node, true);
+        emitStartTag(node, options.debug);
     });
 
     /**
@@ -165,6 +165,10 @@ module.exports = (rootOptions) => {
             if(options.trim) {
                 escaped = trimLeadingAndTrailing(escaped);
             }
+
+            do {
+                escaped = escaped.replace("\n", '<br />');
+            } while(escaped.indexOf("\n") > -1);
 
             emitRaw(escaped, options.debug);
 
