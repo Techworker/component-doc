@@ -9,7 +9,7 @@ Trims empty lines after the content.
 </vue-component-usage>
 ---
 <vue-component-usage-test>
-<template v-slot:code>    line 1
+<template v-slot:code>    line 1<br>
     line 2</template>
 <template v-slot:result>    line 1
     line 2</template>

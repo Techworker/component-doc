@@ -19,12 +19,12 @@ Complex code with outer html and inner escaping.
 <strong>Custom Tag before</strong>
 <nested>
   <vue-component-usage-test>
-<template v-slot:another-code-slot>&lt;h1&gt;Test&lt;/h1&gt;
-&lt;ul&gt;
-    &lt;li&gt;This is&lt;/li&gt;
-    &lt;li&gt;a&lt;/li&gt;
-    &lt;li&gt;test template&lt;/li&gt;
-&lt;/ul&gt;
+<template v-slot:another-code-slot>&lt;h1&gt;Test&lt;/h1&gt;<br>
+&lt;ul&gt;<br>
+    &lt;li&gt;This is&lt;/li&gt;<br>
+    &lt;li&gt;a&lt;/li&gt;<br>
+    &lt;li&gt;test template&lt;/li&gt;<br>
+&lt;/ul&gt;<br>
 &lt;p&gt;This is the default test content&lt;/p&gt;</template>
 <template v-slot:result><h1>Test</h1>
 <ul>

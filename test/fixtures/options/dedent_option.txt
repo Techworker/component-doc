@@ -8,7 +8,7 @@ Sets dedent option via option.
 </vue-component-usage>
 ---
 <vue-component-usage-test>
-<template v-slot:code>testcase
+<template v-slot:code>testcase<br>
     indent</template>
 <template v-slot:result>testcase
     indent</template>

@@ -166,9 +166,7 @@ module.exports = (rootOptions) => {
                 escaped = trimLeadingAndTrailing(escaped);
             }
 
-            do {
-                escaped = escaped.replace("\n", '<br />');
-            } while(escaped.indexOf("\n") > -1);
+            escaped = escaped.replace(/\n/g, "<br>\n")
 
             emitRaw(escaped, options.debug);
 
